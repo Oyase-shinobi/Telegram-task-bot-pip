@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='telegram-task-bot',
-    version='0.0.10',
+    version='0.0.11',
     license='BSD-3',
     description='rpi-radio-alarm library',
     long_description=open('README.md').read(),
@@ -10,7 +10,7 @@ setup(
     author='bb4L',
     author_email='39266013+bb4L@users.noreply.github.com',
     url='https://github.com/bb4L/telegram-task-bot-pip',
-    packages=['telegramtaskbot'],
+    packages=['telegramtaskbot', 'telegramtaskbot.Tasks'],
     keywords=['Telegram', 'Bot'],
     install_requires=[
         'python-telegram-bot==12.2.0',
