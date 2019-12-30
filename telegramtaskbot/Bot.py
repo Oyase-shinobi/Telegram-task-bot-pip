@@ -35,8 +35,9 @@ class TelegramTaskBot(object):
             self.cmd_fun[task.job_start_name] = task.start
             self.cmd_fun[task.job_stop_name] = task.stop
             self.default_button_list.extend(task.get_inline_keyboard())
-            self.dispatcher.add_handler(task.job_start_name, task.start, default_filter)
-            self.dispatcher.add_handler(task.job_stop_name, task.stop, default_filter)
+            if task.generic:
+                self.dispatcher.add_handler(CommandHandler(task.job_start_name, task.start, default_filter))
+                self.dispatcher.add_handler(CommandHandler(task.job_stop_name, task.stop, default_filter))
 
         self.load_from_json()
 

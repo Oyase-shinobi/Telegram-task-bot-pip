@@ -13,6 +13,7 @@ class Task(object):
     job_name: str
     job_start_name: str
     job_stop_name: str
+    generic: bool = False  # defines if the task looks the same for each user
     first_time = 0
     repeat_time: timedelta = timedelta(seconds=5)
     filename: str = ''
