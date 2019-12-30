@@ -1,5 +1,6 @@
 import json
 import logging
+
 from abc import abstractmethod
 from datetime import timedelta
 from typing import List
@@ -13,13 +14,16 @@ class Task(object):
     job_name: str
     job_start_name: str
     job_stop_name: str
+    disable_notifications: bool = True
     generic: bool = False  # defines if the task looks the same for each user
     first_time = 0
     repeat_time: timedelta = timedelta(seconds=5)
     filename: str = ''
+    logger = logging.getLogger(__name__)
 
-    def __init__(self, job_queue: JobQueue):
-        pass
+    def __init__(self, job_queue: JobQueue = None):
+        self.job_start_name = 'start_' + self.job_name
+        self.job_stop_name = 'stop_' + self.job_name
 
     def start(self, jobs: List[telegram.ext.Job], update: telegram.Update, context: telegram.ext.CallbackContext):
         context.bot.send_message(chat_id=update.callback_query.message.chat_id,
@@ -27,10 +31,10 @@ class Task(object):
         self._start(jobs, context.job_queue, update.callback_query.message.chat_id)
 
     def start_command(self, update: telegram.Update, context: telegram.ext.CallbackContext):
-        raise NotImplementedError
+        pass
 
     def stop_command(self, update: telegram.Update, context: telegram.ext.CallbackContext):
-        raise NotImplementedError
+        pass
 
     def _start(self, jobs: List[telegram.ext.Job], job_queue: JobQueue, chat_id):
         new_job = job_queue.run_repeating(self.callback, self.repeat_time, context=chat_id, first=self.first_time)
@@ -47,7 +51,7 @@ class Task(object):
             count += 1
             idx = jobs.index(job_to_stop)
             jobs.pop(idx)
-        logging.info(f' stopped {count} of {num_jobs} jobs for chat_id={chat_id}')
+        self.logger.info(f' stopped {count} of {num_jobs} jobs for chat_id={chat_id}')
 
     @abstractmethod
     def callback(self, context: telegram.ext.CallbackContext):
@@ -68,7 +72,7 @@ class Task(object):
         data = {'users': users}
         with open(self.filename + '.json', 'w') as outfile:
             json.dump(data, outfile)
-        logging.info('Saved User')
+        self.logger.debug('Saved User')
 
     def load_users(self):
         try:
@@ -77,6 +81,6 @@ class Task(object):
                 users = data['users']
         except IOError:
             users = []
-            logging.info("File not accessible")
+            self.logger.error("File not accessible")
         finally:
             return users

@@ -1,5 +1,5 @@
 import json
-import logging
+import logging.config
 import os
 from typing import List
 
@@ -8,9 +8,7 @@ from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, Filters, CallbackQueryHandler
 
-logging.basicConfig(filename='telegramTaskBot.log', filemode='a',
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+from telegramtaskbot.Tasks.UrlTask import UrlTask
 
 
 class TelegramTaskBot(object):
@@ -18,6 +16,7 @@ class TelegramTaskBot(object):
     default_button_list: List[InlineKeyboardButton] = []
     cmd_fun = {}
     job_names = {}
+    logger = logging.getLogger(__name__)
 
     def __init__(self, tasks: []):
         load_dotenv()
@@ -34,6 +33,8 @@ class TelegramTaskBot(object):
             self.cmd_fun[task.job_stop_name] = task.stop
             self.default_button_list.extend(task.get_inline_keyboard())
             if task.generic:
+                if isinstance(task, UrlTask):
+                    self.cmd_fun[task.job_actual_value] = task.get_actual_value
                 self.dispatcher.add_handler(CommandHandler(task.job_start_name, task.start_command, default_filter))
                 self.dispatcher.add_handler(CommandHandler(task.job_stop_name, task.stop_command, default_filter))
 
@@ -50,7 +51,7 @@ class TelegramTaskBot(object):
         return default_filter
 
     def start(self, update, context):
-        reply_markup = InlineKeyboardMarkup(self.build_menu(self.default_button_list, n_cols=2))
+        reply_markup = InlineKeyboardMarkup(self.build_menu(self.default_button_list, n_cols=1))
         context.bot.send_message(chat_id=update.effective_chat.id, text=os.getenv('START_MESSAGE'),
                                  reply_markup=reply_markup)
 
@@ -61,7 +62,7 @@ class TelegramTaskBot(object):
         query = update.callback_query
         self.cmd_fun.get(query.data)(self.jobs, update, context)
         self.save_to_json()
-        logging.info('after save')
+        self.logger.info('after save')
 
     def load_from_json(self):
         try:
@@ -71,9 +72,9 @@ class TelegramTaskBot(object):
                     for task in self.TASKS:
                         if task.job_name == job['name']:
                             task._start(self.jobs, self.updater.job_queue, job['context'])
-                logging.info(f'Loaded {len(data["jobs"])} from JSON')
+                self.logger.info(f'Loaded {len(data["jobs"])} from JSON')
         except IOError:
-            logging.info("File not accessible")
+            self.logger.info("File not accessible")
 
     def save_to_json(self):
         data = {'jobs': []}
