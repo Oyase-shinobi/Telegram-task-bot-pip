@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, Filters, CallbackQueryHandler
 
-from telegramtaskbot.Task import Task
-
 logging.basicConfig(filename='telegramTaskBot.log', filemode='a',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -36,8 +34,8 @@ class TelegramTaskBot(object):
             self.cmd_fun[task.job_stop_name] = task.stop
             self.default_button_list.extend(task.get_inline_keyboard())
             if task.generic:
-                self.dispatcher.add_handler(CommandHandler(task.job_start_name, task.start, default_filter))
-                self.dispatcher.add_handler(CommandHandler(task.job_stop_name, task.stop, default_filter))
+                self.dispatcher.add_handler(CommandHandler(task.job_start_name, task.start_command, default_filter))
+                self.dispatcher.add_handler(CommandHandler(task.job_stop_name, task.stop_command, default_filter))
 
         self.load_from_json()
 

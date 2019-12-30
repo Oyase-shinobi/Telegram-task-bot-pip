@@ -26,6 +26,12 @@ class Task(object):
                                  text=f'Setting the job {self.job_name} up')
         self._start(jobs, context.job_queue, update.callback_query.message.chat_id)
 
+    def start_command(self, update: telegram.Update, context: telegram.ext.CallbackContext):
+        raise NotImplementedError
+
+    def stop_command(self, update: telegram.Update, context: telegram.ext.CallbackContext):
+        raise NotImplementedError
+
     def _start(self, jobs: List[telegram.ext.Job], job_queue: JobQueue, chat_id):
         new_job = job_queue.run_repeating(self.callback, self.repeat_time, context=chat_id, first=self.first_time)
         new_job.name = self.job_name
