@@ -10,7 +10,7 @@ from telegram.ext import Updater, CommandHandler, Filters, CallbackQueryHandler
 
 from telegramtaskbot.Task import Task
 
-logging.basicConfig(filename='telegamTaskBot.log', filemode='a',
+logging.basicConfig(filename='telegramTaskBot.log', filemode='a',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
