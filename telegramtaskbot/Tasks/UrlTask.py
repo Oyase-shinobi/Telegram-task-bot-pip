@@ -33,8 +33,8 @@ class UrlTask(GenericTask):
     def handle_get_actual_value(self, context: telegram.ext.CallbackContext, chat_id: str):
         self.logger.debug(f'Get actual value from {self.job_name} for {chat_id}')
         data: str = self.get_data()
-        context.bot.send_message(chat_id=chat_id, text=data)
         self.logger.debug(f'Send message to {chat_id} with content: \"{" ".join(data.splitlines())}\"')
+        context.bot.send_message(chat_id=chat_id, text=data)
 
     def get_data(self):
         return self.handle_response(self.get_response())
