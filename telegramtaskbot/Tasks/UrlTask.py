@@ -3,6 +3,8 @@ from abc import abstractmethod
 
 import requests
 import telegram
+from telegram.ext import JobQueue
+
 from requests import Response
 from telegram import InlineKeyboardButton
 
@@ -23,11 +25,16 @@ class UrlTask(GenericTask):
                                      disable_notification=self.disable_notifications)
 
     def get_actual_value(self, joblist: [], update: telegram.Update, context: telegram.ext.CallbackContext):
-        self.logger.debug(f'Get actual value from {self.job_name} for {update.callback_query.message.chat_id}')
+        self.handle_get_actual_value(context, update.callback_query.message.chat_id)
+
+    def get_actual_value_cmd(self, update: telegram.Update, context: telegram.ext.CallbackContext):
+        self.handle_get_actual_value(context, update.message.chat_id)
+
+    def handle_get_actual_value(self, context: telegram.ext.CallbackContext, chat_id: str):
+        self.logger.debug(f'Get actual value from {self.job_name} for {chat_id}')
         data: str = self.get_data()
-        context.bot.send_message(chat_id=update.callback_query.message.chat_id, text=data)
-        self.logger.debug(
-            f'Send message to {update.callback_query.message.chat_id} with content: \"{" ".join(data.splitlines())}\"')
+        context.bot.send_message(chat_id=chat_id, text=data)
+        self.logger.debug(f'Send message to {chat_id} with content: \"{" ".join(data.splitlines())}\"')
 
     def get_data(self):
         return self.handle_response(self.get_response())

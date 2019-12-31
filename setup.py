@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='telegram-task-bot',
-    version='0.0.11',
+    version='0.0.12',
     license='BSD-3',
     description='rpi-radio-alarm library',
     long_description=open('README.md').read(),

@@ -35,6 +35,9 @@ class TelegramTaskBot(object):
             if task.generic:
                 if isinstance(task, UrlTask):
                     self.cmd_fun[task.job_actual_value] = task.get_actual_value
+                    self.dispatcher.add_handler(
+                        CommandHandler(task.job_actual_value, task.get_actual_value_cmd, default_filter))
+
                 self.dispatcher.add_handler(CommandHandler(task.job_start_name, task.start_command, default_filter))
                 self.dispatcher.add_handler(CommandHandler(task.job_stop_name, task.stop_command, default_filter))
 

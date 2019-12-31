@@ -61,26 +61,3 @@ class Task(object):
         return [InlineKeyboardButton(f"Start {self.job_name} task", callback_data=self.job_start_name),
                 InlineKeyboardButton(f"Stop {self.job_name} task", callback_data=self.job_stop_name),
                 ]
-
-    def save_user(self, user: str):
-        users = self.load_users()
-        users.append(user)
-        final_users = list(set(users))
-        self.save_to_json(final_users)
-
-    def save_to_json(self, users):
-        data = {'users': users}
-        with open(self.filename + '.json', 'w') as outfile:
-            json.dump(data, outfile)
-        self.logger.debug('Saved User')
-
-    def load_users(self):
-        try:
-            with open(self.filename + '.json') as json_file:
-                data = json.load(json_file)
-                users = data['users']
-        except IOError:
-            users = []
-            self.logger.error("File not accessible")
-        finally:
-            return users
