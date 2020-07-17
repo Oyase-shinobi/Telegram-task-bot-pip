@@ -21,8 +21,13 @@ class UrlTask(GenericTask):
         response_message = self.get_data()
         self.logger.info(f'Notifying {len(users)} users for {self.job_name}')
         for user in users:
-            context.bot.send_message(chat_id=user, text=response_message,
-                                     disable_notification=self.disable_notifications)
+            try:
+                self.logger.info(f'Notifying {user}')
+                context.bot.send_message(chat_id=user, text=response_message,
+                                         disable_notification=self.disable_notifications)
+            except telegram.TelegramError as e:
+                self.logger.info(f'Error occurred while notifying {user}')
+                self.logger.error(e.message)
 
     def get_actual_value(self, joblist: [], update: telegram.Update, context: telegram.ext.CallbackContext):
         self.handle_get_actual_value(context, update.callback_query.message.chat_id)
