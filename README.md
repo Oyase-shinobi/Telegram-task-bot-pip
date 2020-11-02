@@ -31,7 +31,7 @@ The callback method ( `callback(self, context: telegram.ext.CallbackContext)`) m
 
 ### UrlTask
 Extension of the `GenericTask` to simplify the usage for jobs calling a URL and returning the link/ response to the subscribers.
-It tries until it gets a response every 2 seconds.
+It retries every 2 seconds until it gets a response.
 
 This class adds a `url` field where the information lies.
 
