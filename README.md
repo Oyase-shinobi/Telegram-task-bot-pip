@@ -36,9 +36,3 @@ It retries every 2 seconds until it gets a response.
 This class adds a `url` field where the information lies.
 
 The `handle_response(self, response: Response)` must be implemented to extract the data from the request and return the message string.
-
-# Example Project
-https://github.com/bb4L/digitec_daily_bot
-
-# License
-[LGPLv3](LICENSE)
